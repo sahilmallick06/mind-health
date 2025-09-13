@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mental Health Support for Students</title>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <!-- Chart.js for Results -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(to right, #667eea, #764ba2);
+      color: #fff;
+    }
+    header {
+      text-align: center;
+      padding: 80px 20px;
+      background: rgba(0,0,0,0.4);
+    }
+    header h1 {
+      font-size: 3rem;
+      margin-bottom: 10px;
+    }
+    header p {
+      font-size: 1.2rem;
+      opacity: 0.9;
+    }
+    .btn {
+      display: inline-block;
+      padding: 12px 25px;
+      background: #ffcc70;
+      color: #333;
+      font-weight: bold;
+      border-radius: 30px;
+      margin-top: 20px;
+      text-decoration: none;
+      transition: background 0.3s;
+    }
+    .btn:hover { background: #ffd98e; }
+
+    /* Questionnaire Section */
+    #quiz {
+      max-width: 600px;
+      margin: 40px auto;
+      background: rgba(255,255,255,0.1);
+      padding: 30px;
+      border-radius: 15px;
+      display: none;
+    }
+    #quiz h2 {
+      margin-bottom: 20px;
+    }
+    .options button {
+      display: block;
+      width: 100%;
+      margin: 8px 0;
+      padding: 12px;
+      background: #fff;
+      color: #333;
+      border: none;
+      border-radius: 10px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    .options button:hover {
+      background: #ffcc70;
+    }
+    #progress {
+      margin-top: 20px;
+      font-size: 0.9rem;
+    }
+
+    /* Results */
+    #results {
+      max-width: 700px;
+      margin: 40px auto;
+      text-align: center;
+      display: none;
+      padding: 30px;
+      background: rgba(0,0,0,0.3);
+      border-radius: 15px;
+    }
+
+    /* Resources */
+    #resources {
+      padding: 60px 20px;
+      text-align: center;
+      background: rgba(0,0,0,0.4);
+    }
+    #resources h2 { margin-bottom: 20px; }
+
+    /* SOS */
+    #sos {
+      padding: 40px 20px;
+      text-align: center;
+      background: #ff4b5c;
+    }
+    #sos h2 { margin-bottom: 10px; }
+
+    footer {
+      text-align: center;
+      padding: 20px;
+      font-size: 0.9rem;
+      background: rgba(0,0,0,0.6);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Hero Section -->
+  <header>
+    <h1>MindCare: Student Mental Health Support</h1>
+    <p>Your bridge between students and psychologists</p>
+    <a href="#quiz" class="btn" onclick="startQuiz()">Start Assessment</a>
+  </header>
+
+  <!-- Questionnaire -->
+  <section id="quiz">
+    <h2 id="question">Question text</h2>
+    <div class="options" id="options"></div>
+    <p id="progress"></p>
+  </section>
+
+  <!-- Results -->
+  <section id="results">
+    <h2>Your Mental Health Assessment</h2>
+    <canvas id="resultChart" width="400" height="200"></canvas>
+    <p id="recommendation"></p>
+    <a href="#resources" class="btn">View Resources</a>
+  </section>
+
+  <!-- Resources Section -->
+  <section id="resources">
+    <h2>Self-Help Resources</h2>
+    <p>🎵 <a href="https://open.spotify.com/playlist/37i9dQZF1DX3PIPIT6lEg5" target="_blank">Calming Music Playlist</a></p>
+    <p>🧘 <a href="https://www.youtube.com/watch?v=inpok4MKVLM" target="_blank">Guided Meditation</a></p>
+    <p>🏋️ <a href="https://www.youtube.com/watch?v=UBMk30rjy0o" target="_blank">Quick Exercise Video</a></p>
+  </section>
+
+  <!-- SOS Section -->
+  <section id="sos">
+    <h2>🚨 Student Crisis Helpline</h2>
+    <p>If you are in immediate distress, please call:</p>
+    <p><b>India Helpline:</b> 9152987821</p>
+    <p><b>International SOS:</b> +1-800-273-8255</p>
+    <a href="mailto:psychologist@support.com" class="btn">Connect to a Psychologist</a>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <p>© 2025 MindCare | Built for Students’ Well-being</p>
+  </footer>
+
+  <!-- JavaScript -->
+  <script>
+    const questions = [
+      { q: "How often do you feel sad or hopeless?", cat: "Depression" },
+      { q: "Do you struggle to concentrate on studies?", cat: "Depression" },
+      { q: "Do you feel nervous or anxious frequently?", cat: "Anxiety" },
+      { q: "Do you experience sudden panic or fear?", cat: "Anxiety" },
+      { q: "How often do you sleep less than 5 hours?", cat: "Sleep" },
+      { q: "Do you have trouble falling asleep?", cat: "Sleep" },
+      { q: "How often do you feel stressed with workload?", cat: "Stress" },
+      { q: "Do you get easily irritated or angry?", cat: "Anger" },
+      { q: "Do you feel physical symptoms (headache, nausea) from stress?", cat: "Stress" },
+      { q: "Do you avoid social interactions?", cat: "Depression" },
+      // add more up to 20...
+    ];
+
+    const options = [
+      { text: "Never", score: 0 },
+      { text: "Sometimes", score: 1 },
+      { text: "Often", score: 2 },
+      { text: "Almost Always", score: 3 }
+    ];
+
+    let currentQ = 0;
+    let scores = { Depression:0, Anxiety:0, Stress:0, Sleep:0, Anger:0 };
+
+    function startQuiz() {
+      document.getElementById("quiz").style.display = "block";
+      showQuestion();
+    }
+
+    function showQuestion() {
+      const q = questions[currentQ];
+      document.getElementById("question").textContent = q.q;
+      const optsDiv = document.getElementById("options");
+      optsDiv.innerHTML = "";
+      options.forEach(opt => {
+        const btn = document.createElement("button");
+        btn.textContent = opt.text;
+        btn.onclick = () => selectOption(opt.score, q.cat);
+        optsDiv.appendChild(btn);
+      });
+      document.getElementById("progress").textContent =
+        `Question ${currentQ+1} of ${questions.length}`;
+    }
+
+    function selectOption(score, category) {
+      scores[category] += score;
+      currentQ++;
+      if (currentQ < questions.length) {
+        showQuestion();
+      } else {
+        showResults();
+      }
+    }
+
+    function showResults() {
+      document.getElementById("quiz").style.display = "none";
+      document.getElementById("results").style.display = "block";
+
+      const ctx = document.getElementById("resultChart").getContext("2d");
+      new Chart(ctx, {
+        type: "pie",
+        data: {
+          labels: Object.keys(scores),
+          datasets: [{
+            data: Object.values(scores),
+            backgroundColor: ["#ff9999","#66b3ff","#99ff99","#ffcc99","#c2c2f0"]
+          }]
+        }
+      });
+
+      let rec = "✅ Your results suggest mild symptoms. Keep practicing mindfulness.";
+      if (scores.Depression > 5 || scores.Anxiety > 5 || scores.Stress > 5) {
+        rec = "⚠️ Your results indicate moderate to high stress. Please consult a psychologist.";
+      }
+      document.getElementById("recommendation").textContent = rec;
+    }
+  </script>
+</body>
+</html>
